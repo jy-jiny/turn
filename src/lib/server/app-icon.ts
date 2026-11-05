@@ -8,7 +8,7 @@ export function makeAppIcon(size: number) {
       {
         style: {
           alignItems: "center",
-          background: "#ffcc3d",
+          background: "#f2f5f1",
           display: "flex",
           height: "100%",
           justifyContent: "center",
@@ -20,7 +20,7 @@ export function makeAppIcon(size: number) {
         {
           style: {
             alignItems: "center",
-            background: "#171714",
+            background: "#176047",
             color: "#ffffff",
             display: "flex",
             fontFamily: "sans-serif",

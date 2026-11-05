@@ -50,7 +50,7 @@ function Modal({ children, label, onClose }: ModalProps) {
           event.currentTarget.close();
         }
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg border-2 border-[#171714] bg-[#f7f6f1] p-0 text-[#171714] shadow-[8px_8px_0_#171714] backdrop:bg-[#171714]/55"
+      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-[8px] border border-[#dbe3dd] bg-white p-0 text-[#14231c] shadow-[0_24px_80px_rgba(16,35,27,0.24)] backdrop:bg-[#14231c]/60"
     >
       {children}
     </dialog>
@@ -70,36 +70,36 @@ function BuyerDialog({
 }) {
   return (
     <Modal label="실제 구매자 선택" onClose={onClose}>
-      <div className="flex items-start justify-between border-b-2 border-[#171714] p-5">
+      <div className="flex items-start justify-between border-b border-[#e3e9e5] p-5 sm:p-6">
         <div>
-          <p className="text-xs font-black text-[#2457e6]">대타 기록</p>
+          <p className="text-xs font-black text-[#ff6b4a]">대타 기록</p>
           <h2 className="mt-1 text-2xl font-black">누가 샀나요?</h2>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="grid size-10 place-items-center border-2 border-[#171714] bg-white hover:bg-[#ffcc3d] focus-visible:outline-4 focus-visible:outline-[#2457e6]"
+          className="grid size-10 place-items-center rounded-full bg-[#f0f4f1] text-[#536058] hover:bg-[#e5f2eb] hover:text-[#176047] focus-visible:outline-4 focus-visible:outline-[#176047]/20"
           aria-label="닫기"
         >
           <X className="size-5" aria-hidden="true" />
         </button>
       </div>
-      <div className="grid gap-3 p-5">
+      <div className="grid gap-2 p-5 sm:p-6">
         {room.members.map((member, index) => (
           <button
             type="button"
             key={member.id}
             disabled={isPending}
             onClick={() => onChoose(member.id)}
-            className="group flex min-h-16 items-center justify-between border-2 border-[#171714] bg-white px-4 text-left hover:bg-[#ffcc3d] focus-visible:outline-4 focus-visible:outline-[#2457e6] disabled:opacity-60"
+            className="group flex min-h-16 items-center justify-between rounded-[8px] border border-[#dbe3dd] bg-white px-4 text-left transition hover:border-[#a9c7ba] hover:bg-[#f2f8f4] focus-visible:outline-4 focus-visible:outline-[#176047]/20 disabled:opacity-60"
           >
             <span className="flex items-center gap-3">
-              <span className="grid size-8 place-items-center bg-[#e9e8e2] text-xs font-black group-hover:bg-white">
+              <span className="grid size-8 place-items-center rounded-full bg-[#e5f2eb] text-xs font-black text-[#176047] group-hover:bg-white">
                 {index + 1}
               </span>
               <span>
                 <strong className="block text-lg">{member.name}</strong>
-                <small className="text-xs font-bold text-[#64635d]">
+                <small className="text-xs font-bold text-[#718078]">
                   {index === 0 ? "원래 오늘 순서" : "대신 구매"}
                 </small>
               </span>
@@ -155,15 +155,15 @@ function SettingsDialog({
   return (
     <Modal label="방 설정" onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <div className="flex items-start justify-between border-b-2 border-[#171714] p-5">
+        <div className="flex items-start justify-between border-b border-[#e3e9e5] p-5 sm:p-6">
           <div>
-            <p className="text-xs font-black text-[#2457e6]">방 설정</p>
+            <p className="text-xs font-black text-[#ff6b4a]">방 설정</p>
             <h2 className="mt-1 text-2xl font-black">이름과 순서</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="grid size-10 place-items-center border-2 border-[#171714] bg-white hover:bg-[#ffcc3d] focus-visible:outline-4 focus-visible:outline-[#2457e6]"
+            className="grid size-10 place-items-center rounded-full bg-[#f0f4f1] text-[#536058] hover:bg-[#e5f2eb] hover:text-[#176047] focus-visible:outline-4 focus-visible:outline-[#176047]/20"
             aria-label="닫기"
           >
             <X className="size-5" aria-hidden="true" />
@@ -172,21 +172,21 @@ function SettingsDialog({
 
         <div className="grid gap-6 p-5">
           <label className="grid gap-2">
-            <span className="text-sm font-black">방 이름</span>
+            <span className="text-sm font-black text-[#34443c]">방 이름</span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
               maxLength={30}
-              className="h-12 border-2 border-[#171714] bg-white px-3 font-bold outline-none focus:shadow-[4px_4px_0_#ffcc3d]"
+              className="h-12 rounded-[7px] border border-[#d5ded8] bg-[#f8faf8] px-3 font-bold outline-none focus:border-[#176047] focus:bg-white focus:ring-4 focus:ring-[#176047]/10"
             />
           </label>
 
           <fieldset>
-            <legend className="mb-3 text-sm font-black">현재 순서</legend>
+            <legend className="mb-3 text-sm font-black text-[#34443c]">현재 순서</legend>
             <div className="grid gap-3">
               {members.map((member, index) => (
                 <div key={member.id} className="flex items-center gap-2">
-                  <span className="grid size-10 shrink-0 place-items-center bg-[#171714] text-sm font-black text-white">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#176047] text-sm font-black text-white">
                     {index + 1}
                   </span>
                   <input
@@ -194,14 +194,14 @@ function SettingsDialog({
                     onChange={(event) => updateMemberName(member.id, event.target.value)}
                     maxLength={12}
                     aria-label={`${index + 1}번째 사람 이름`}
-                    className="h-12 min-w-0 flex-1 border-2 border-[#171714] bg-white px-3 font-bold outline-none focus:shadow-[4px_4px_0_#ffcc3d]"
+                    className="h-12 min-w-0 flex-1 rounded-[7px] border border-[#d5ded8] bg-[#f8faf8] px-3 font-bold outline-none focus:border-[#176047] focus:bg-white focus:ring-4 focus:ring-[#176047]/10"
                   />
                   <div className="flex shrink-0">
                     <button
                       type="button"
                       disabled={index === 0}
                       onClick={() => moveMember(index, -1)}
-                      className="grid size-10 place-items-center border-2 border-r-0 border-[#171714] bg-white hover:bg-[#ffcc3d] disabled:opacity-25"
+                      className="grid size-10 place-items-center rounded-l-[7px] border border-[#d5ded8] bg-white text-[#536058] hover:bg-[#e5f2eb] hover:text-[#176047] disabled:opacity-25"
                       aria-label={`${member.name} 순서 위로`}
                     >
                       <ArrowUp className="size-4" aria-hidden="true" />
@@ -210,7 +210,7 @@ function SettingsDialog({
                       type="button"
                       disabled={index === members.length - 1}
                       onClick={() => moveMember(index, 1)}
-                      className="grid size-10 place-items-center border-2 border-[#171714] bg-white hover:bg-[#ffcc3d] disabled:opacity-25"
+                      className="grid size-10 place-items-center rounded-r-[7px] border border-l-0 border-[#d5ded8] bg-white text-[#536058] hover:bg-[#e5f2eb] hover:text-[#176047] disabled:opacity-25"
                       aria-label={`${member.name} 순서 아래로`}
                     >
                       <ArrowDown className="size-4" aria-hidden="true" />
@@ -222,18 +222,18 @@ function SettingsDialog({
           </fieldset>
         </div>
 
-        <div className="flex gap-3 border-t-2 border-[#171714] p-5">
+        <div className="flex gap-3 border-t border-[#e3e9e5] p-5 sm:p-6">
           <button
             type="button"
             onClick={onClose}
-            className="h-12 flex-1 border-2 border-[#171714] bg-white font-black hover:bg-[#e9e8e2]"
+            className="h-12 flex-1 rounded-[8px] border border-[#d5ded8] bg-white font-black text-[#536058] hover:bg-[#f0f4f1]"
           >
             취소
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="flex h-12 flex-[1.5] items-center justify-center gap-2 bg-[#2457e6] font-black text-white disabled:opacity-60"
+            className="flex h-12 flex-[1.5] items-center justify-center gap-2 rounded-[8px] bg-[#176047] font-black text-white hover:bg-[#0e4936] disabled:opacity-60"
           >
             {isPending && <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />}
             저장하기
@@ -431,8 +431,8 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
   if (!room && !loadError) {
     return (
       <main className="grid min-h-screen place-items-center px-5">
-        <div className="flex items-center gap-3 font-black">
-          <LoaderCircle className="size-6 animate-spin text-[#2457e6]" aria-hidden="true" />
+        <div className="flex items-center gap-3 font-black text-[#34443c]">
+          <LoaderCircle className="size-6 animate-spin text-[#176047]" aria-hidden="true" />
           커피 순서를 불러오는 중
         </div>
       </main>
@@ -442,13 +442,15 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
   if (!room) {
     return (
       <main className="grid min-h-screen place-items-center px-5">
-        <section className="w-full max-w-md border-2 border-[#171714] bg-white p-7 shadow-[8px_8px_0_#171714]">
-          <Coffee className="mb-5 size-10 text-[#2457e6]" aria-hidden="true" />
+        <section className="w-full max-w-md rounded-[8px] border border-[#dbe3dd] bg-white p-7 shadow-[0_24px_60px_rgba(30,55,43,0.12)]">
+          <span className="mb-5 grid size-12 place-items-center rounded-full bg-[#e5f2eb] text-[#176047]">
+            <Coffee className="size-6" aria-hidden="true" />
+          </span>
           <h1 className="text-2xl font-black">방을 열 수 없어요</h1>
-          <p className="mt-3 text-sm font-semibold leading-6 text-[#64635d]">{loadError}</p>
+          <p className="mt-3 text-sm font-semibold leading-6 text-[#66736c]">{loadError}</p>
           <Link
             href="/"
-            className="mt-7 flex h-12 items-center justify-center gap-2 bg-[#171714] font-black text-white"
+            className="mt-7 flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#176047] font-black text-white hover:bg-[#0e4936]"
           >
             <ArrowLeft className="size-4" aria-hidden="true" />새 방 만들기
           </Link>
@@ -461,7 +463,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
 
   return (
     <main className="min-h-screen pb-12">
-      <header className="border-b-2 border-[#171714] bg-[#f7f6f1]/95 px-5 py-4 backdrop-blur sm:px-8">
+      <header className="border-b border-[#dbe3dd] bg-white/90 px-5 py-4 backdrop-blur sm:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <Link href="/" aria-label="커피턴 새 방 만들기">
             <Brand compact />
@@ -470,7 +472,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
             <button
               type="button"
               onClick={shareRoom}
-              className="grid size-10 place-items-center border-2 border-[#171714] bg-white hover:bg-[#ffcc3d] focus-visible:outline-4 focus-visible:outline-[#2457e6]"
+              className="grid size-10 place-items-center rounded-[8px] border border-[#dbe3dd] bg-white text-[#536058] transition hover:border-[#a9c7ba] hover:bg-[#e5f2eb] hover:text-[#176047] focus-visible:outline-4 focus-visible:outline-[#176047]/20"
               aria-label="방 공유"
               title="방 공유"
             >
@@ -479,7 +481,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="grid size-10 place-items-center border-2 border-[#171714] bg-white hover:bg-[#ffcc3d] focus-visible:outline-4 focus-visible:outline-[#2457e6]"
+              className="grid size-10 place-items-center rounded-[8px] border border-[#dbe3dd] bg-white text-[#536058] transition hover:border-[#a9c7ba] hover:bg-[#e5f2eb] hover:text-[#176047] focus-visible:outline-4 focus-visible:outline-[#176047]/20"
               aria-label="방 설정"
               title="방 설정"
             >
@@ -491,80 +493,95 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
 
       <div className="mx-auto max-w-6xl px-5 pt-5 sm:px-8 sm:pt-8">
         {room.storageMode === "development-memory" && (
-          <div className="mb-5 flex items-center justify-between gap-4 border-2 border-[#171714] bg-[#ffefb6] px-4 py-3 text-xs font-bold">
-            <span>로컬 미리보기 · 서버를 다시 켜면 이 방은 사라집니다.</span>
-            <span className="hidden text-[#64635d] sm:inline">Supabase 연결 전</span>
+          <div className="mb-5 flex items-center justify-between gap-4 rounded-[8px] border border-[#efdca8] bg-[#fff8df] px-4 py-3 text-xs font-bold text-[#6f5a1c]">
+            <span className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-[#f3c84b]" />
+              로컬 미리보기 · 서버를 다시 켜면 이 방은 사라집니다.
+            </span>
+            <span className="hidden text-[#8a7540] sm:inline">서버 저장 연결 전</span>
           </div>
         )}
 
-        <section className="grid border-2 border-[#171714] bg-[#2457e6] text-white lg:grid-cols-[1fr_20rem]">
+        <section className="enter-up grid overflow-hidden rounded-[8px] bg-[#176047] text-white shadow-[0_24px_60px_rgba(23,96,71,0.18)] lg:grid-cols-[minmax(0,1fr)_21rem]">
           <div className="min-w-0 p-6 sm:p-10 lg:p-12">
-            <div className="flex items-center gap-2 text-sm font-black">
-              <span className="size-2.5 bg-[#ffcc3d]" />
+            <div className="flex items-center gap-2 text-sm font-bold text-white/75">
+              <span className="size-2 rounded-full bg-[#f3c84b] shadow-[0_0_0_5px_rgba(243,200,75,0.12)]" />
               {room.name}
             </div>
-            <p className="mt-12 text-sm font-bold text-white/75 sm:mt-16">오늘 커피는</p>
-            <h1 className="mt-2 break-all text-5xl font-black leading-tight sm:text-7xl">{currentBuyer.name}</h1>
-            <p className="mt-3 text-lg font-bold">님이 살 차례예요.</p>
+            <p className="mt-12 text-sm font-bold text-white/65 sm:mt-16">오늘 커피는</p>
+            <h1 className="mt-1 break-all text-5xl font-black leading-tight sm:text-7xl">{currentBuyer.name}</h1>
+            <p className="mt-3 text-lg font-bold text-white/85">님이 살 차례예요.</p>
 
             <div className="mt-12 grid gap-3 sm:mt-14 sm:grid-cols-[minmax(0,1fr)_auto]">
               <button
                 type="button"
                 disabled={isPending}
                 onClick={() => recordPurchase(currentBuyer.id)}
-                className="flex min-h-16 items-center justify-between bg-[#ffcc3d] px-5 text-lg font-black text-[#171714] transition-transform hover:-translate-y-0.5 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-wait disabled:opacity-70"
+                className="flex min-h-16 items-center justify-between rounded-[8px] bg-[#ff6b4a] px-5 text-lg font-black text-white shadow-[0_10px_26px_rgba(106,25,8,0.24)] transition hover:bg-[#ed5637] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-wait disabled:opacity-70"
               >
                 <span>{isPending ? "기록 중" : "샀어요"}</span>
                 {isPending ? (
                   <LoaderCircle className="size-6 animate-spin" aria-hidden="true" />
                 ) : (
-                  <Check className="size-6" strokeWidth={3} aria-hidden="true" />
+                  <span className="grid size-9 place-items-center rounded-full bg-white/16">
+                    <Check className="size-5" strokeWidth={3} aria-hidden="true" />
+                  </span>
                 )}
               </button>
               <button
                 type="button"
                 disabled={isPending}
                 onClick={() => setBuyerDialogOpen(true)}
-                className="min-h-14 border-2 border-white px-5 font-black hover:bg-white hover:text-[#2457e6] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#ffcc3d] disabled:opacity-60 sm:min-h-16"
+                className="min-h-14 rounded-[8px] border border-white/35 bg-white/8 px-5 font-black transition hover:bg-white hover:text-[#176047] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#f3c84b] disabled:opacity-60 sm:min-h-16"
               >
                 다른 사람이 샀어요
               </button>
             </div>
           </div>
 
-          <aside className="border-t-2 border-[#171714] bg-[#f7f6f1] p-6 text-[#171714] lg:border-l-2 lg:border-t-0 lg:p-8">
+          <aside className="bg-white p-6 text-[#14231c] lg:p-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-black">다음 순서</h2>
-              <Users className="size-5 text-[#2457e6]" aria-hidden="true" />
+              <div>
+                <p className="text-xs font-black text-[#ff6b4a]">QUEUE</p>
+                <h2 className="mt-1 text-lg font-black">다음 순서</h2>
+              </div>
+              <span className="grid size-10 place-items-center rounded-full bg-[#e5f2eb] text-[#176047]">
+                <Users className="size-5" aria-hidden="true" />
+              </span>
             </div>
-            <ol className="mt-6 grid gap-3">
+            <ol className="mt-5 grid gap-2">
               {room.members.map((member, index) => (
-                <li key={member.id} className="flex items-center gap-3">
+                <li
+                  key={member.id}
+                  className={`flex min-h-12 items-center gap-3 rounded-[8px] px-3 ${
+                    index === 0 ? "bg-[#e5f2eb]" : "bg-[#f7f9f7]"
+                  }`}
+                >
                   <span
-                    className={`grid size-10 shrink-0 place-items-center border-2 border-[#171714] text-xs font-black ${
-                      index === 0 ? "bg-[#ffcc3d]" : "bg-white"
+                    className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-black ${
+                      index === 0 ? "bg-[#176047] text-white" : "bg-white text-[#718078]"
                     }`}
                   >
                     {index + 1}
                   </span>
                   <span className="min-w-0 flex-1 truncate font-black">{member.name}</span>
                   {index < room.members.length - 1 && (
-                    <ArrowRight className="size-4 text-[#8a8982]" aria-hidden="true" />
+                    <ArrowRight className="size-4 text-[#a9b2ac]" aria-hidden="true" />
                   )}
                 </li>
               ))}
             </ol>
-            <div className="mt-7 border-t-2 border-[#171714] pt-5 text-xs font-bold leading-5 text-[#64635d]">
+            <div className="mt-6 border-t border-[#e3e9e5] pt-5 text-xs font-semibold leading-5 text-[#718078]">
               산 사람은 맨 뒤로 이동해요. 대타가 사도 나머지 순서는 그대로예요.
             </div>
           </aside>
         </section>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
-          <div className="border-2 border-[#171714] bg-white">
-            <div className="flex items-center justify-between border-b-2 border-[#171714] px-5 py-4 sm:px-6">
+        <section className="enter-up-delayed mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+          <div className="overflow-hidden rounded-[8px] border border-[#dbe3dd] bg-white shadow-[0_10px_30px_rgba(30,55,43,0.06)]">
+            <div className="flex items-center justify-between border-b border-[#e3e9e5] px-5 py-5 sm:px-6">
               <div>
-                <p className="text-xs font-black text-[#2457e6]">RECENT</p>
+                <p className="text-xs font-black text-[#ff6b4a]">RECENT</p>
                 <h2 className="mt-1 text-xl font-black">최근 구매</h2>
               </div>
               {room.purchases.length > 0 && (
@@ -572,7 +589,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
                   type="button"
                   disabled={isPending}
                   onClick={undoPurchase}
-                  className="flex h-10 items-center gap-2 border-2 border-[#171714] px-3 text-sm font-black hover:bg-[#ffcc3d] disabled:opacity-50"
+                  className="flex h-10 items-center gap-2 rounded-[8px] border border-[#d5ded8] px-3 text-sm font-bold text-[#536058] hover:border-[#a9c7ba] hover:bg-[#e5f2eb] hover:text-[#176047] disabled:opacity-50"
                 >
                   <RotateCcw className="size-4" aria-hidden="true" />
                   마지막 취소
@@ -583,8 +600,10 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
             {room.purchases.length === 0 ? (
               <div className="grid min-h-36 place-items-center p-6 text-center">
                 <div>
-                  <Coffee className="mx-auto size-7 text-[#aaa9a2]" aria-hidden="true" />
-                  <p className="mt-3 text-sm font-bold text-[#64635d]">첫 커피를 기다리고 있어요.</p>
+                  <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#f0f4f1] text-[#8a9890]">
+                    <Coffee className="size-6" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-sm font-bold text-[#718078]">첫 커피를 기다리고 있어요.</p>
                 </div>
               </div>
             ) : (
@@ -593,16 +612,16 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
                   <li
                     key={purchase.id}
                     className={`flex items-center justify-between gap-4 px-5 py-4 sm:px-6 ${
-                      index < room.purchases.length - 1 ? "border-b border-[#d7d6cf]" : ""
+                      index < room.purchases.length - 1 ? "border-b border-[#edf1ee]" : ""
                     }`}
                   >
                     <span className="flex min-w-0 items-center gap-3">
-                      <span className="grid size-9 shrink-0 place-items-center bg-[#e9e8e2]">
+                      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e5f2eb] text-[#176047]">
                         <Coffee className="size-4" aria-hidden="true" />
                       </span>
                       <span className="truncate font-black">{purchase.buyerName}</span>
                     </span>
-                    <time className="shrink-0 text-xs font-bold text-[#64635d]" dateTime={purchase.createdAt}>
+                    <time className="shrink-0 text-xs font-bold text-[#718078]" dateTime={purchase.createdAt}>
                       {formatPurchaseDate(purchase.createdAt)}
                     </time>
                   </li>
@@ -611,24 +630,26 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
             )}
           </div>
 
-          <aside className="border-2 border-[#171714] bg-[#f7f6f1] p-5 sm:p-6">
-            <Share2 className="size-7 text-[#2457e6]" aria-hidden="true" />
+          <aside className="rounded-[8px] border border-[#f0dfb8] bg-[#fff8e8] p-5 sm:p-6">
+            <span className="grid size-11 place-items-center rounded-full bg-white text-[#b5781c] shadow-sm">
+              <Share2 className="size-5" aria-hidden="true" />
+            </span>
             <h2 className="mt-5 text-lg font-black">같이 쓰는 방</h2>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#64635d]">
+            <p className="mt-2 text-sm font-semibold leading-6 text-[#796943]">
               이 링크를 세 사람에게 보내면 같은 순서를 볼 수 있어요.
             </p>
             <div className="mt-5 grid gap-2">
               <button
                 type="button"
                 onClick={shareRoom}
-                className="flex h-11 items-center justify-between bg-[#171714] px-3 font-black text-white"
+                className="flex h-11 items-center justify-between rounded-[8px] bg-[#176047] px-3 font-black text-white hover:bg-[#0e4936]"
               >
                 공유하기 <Share2 className="size-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex h-11 items-center justify-between border-2 border-[#171714] bg-white px-3 font-black hover:bg-[#ffcc3d]"
+                className="flex h-11 items-center justify-between rounded-[8px] border border-[#e3ce9f] bg-white px-3 font-black text-[#5e502f] hover:bg-[#fff2cd]"
               >
                 링크 복사 <Clipboard className="size-4" aria-hidden="true" />
               </button>
@@ -640,7 +661,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
       {notice && (
         <div
           role="status"
-          className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 border-2 border-[#171714] bg-[#171714] px-4 py-3 text-center text-sm font-black text-white shadow-[5px_5px_0_#ffcc3d]"
+          className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-[8px] bg-[#14231c] px-4 py-3 text-center text-sm font-black text-white shadow-[0_12px_35px_rgba(20,35,28,0.28)]"
         >
           {notice}
         </div>

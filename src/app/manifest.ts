@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "우리 셋의 공평한 커피 순서",
     start_url: "/",
     display: "standalone",
-    background_color: "#f7f6f1",
-    theme_color: "#f7f6f1",
+    background_color: "#f2f5f1",
+    theme_color: "#176047",
     lang: "ko",
     categories: ["lifestyle", "productivity"],
     icons: [
