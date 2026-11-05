@@ -37,6 +37,20 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY`는 방별 Realtime Broadcast에만 사용합니다. `SUPABASE_SERVICE_ROLE_KEY`는 서버 전용이므로 `NEXT_PUBLIC_` 접두사를 붙이거나 브라우저 코드에서 사용하면 안 됩니다. 테이블에는 RLS가 적용되어 있고 앱은 Next.js API를 통해서만 데이터에 접근합니다.
 
+## 로컬 파일 저장 (Supabase 없이 운영)
+
+Supabase 대신 서버 컴퓨터의 JSON 파일 하나에 방을 저장할 수 있습니다. 라즈베리파이처럼 한 대의 서버에서 직접 운영할 때 사용합니다.
+
+```bash
+COFFEE_TURN_DATA_FILE=/home/pi/coffee-turn-data/rooms.json npm run start
+```
+
+- Supabase 환경변수가 있으면 Supabase가 우선합니다.
+- 변경할 때마다 임시 파일에 쓴 뒤 교체하므로 쓰는 도중 꺼져도 파일이 반쯤 깨지지 않습니다.
+- 실시간 알림 없이 5초 주기·화면 복귀 시 동기화합니다.
+- 서버 프로세스 하나에서만 실행해야 합니다. 백업은 이 파일을 복사하면 됩니다.
+- 32비트 ARM(armv7)에서는 Turbopack이 지원되지 않아 `npx next build --webpack`으로 빌드합니다.
+
 ## 검증
 
 ```powershell

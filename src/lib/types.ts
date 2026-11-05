@@ -14,7 +14,7 @@ export type Purchase = {
   createdAt: string;
 };
 
-export type StorageMode = "supabase" | "development-memory";
+export type StorageMode = "supabase" | "local-file" | "development-memory";
 
 export type RoomState = {
   slug: string;
