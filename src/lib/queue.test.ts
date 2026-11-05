@@ -24,6 +24,17 @@ describe("moveBuyerToBack", () => {
     ]);
   });
 
+  it("supports queues with more than three people", () => {
+    const extendedQueue = [...queue, { id: "younghee", name: "영희" }];
+
+    expect(moveBuyerToBack(extendedQueue, "jisu").map(({ id }) => id)).toEqual([
+      "minsu",
+      "chulsu",
+      "younghee",
+      "jisu",
+    ]);
+  });
+
   it("rejects a buyer outside the queue", () => {
     expect(() => moveBuyerToBack(queue, "unknown")).toThrow(
       "구매자를 대기열에서 찾을 수 없습니다.",

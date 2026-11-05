@@ -13,7 +13,7 @@ create table public.members (
   id uuid primary key default gen_random_uuid(),
   room_id uuid not null references public.rooms(id) on delete cascade,
   name text not null check (char_length(name) between 1 and 12),
-  position smallint not null check (position between 0 and 2),
+  position smallint not null check (position between 0 and 11),
   unique (room_id, position) deferrable initially deferred
 );
 
@@ -22,7 +22,7 @@ create table public.purchases (
   room_id uuid not null references public.rooms(id) on delete cascade,
   buyer_id uuid not null,
   buyer_name text not null,
-  queue_before uuid[] not null check (cardinality(queue_before) = 3),
+  queue_before uuid[] not null check (cardinality(queue_before) between 1 and 12),
   created_at timestamptz not null default now()
 );
 
@@ -94,18 +94,19 @@ set search_path = ''
 as $$
 declare
   v_room_id uuid;
+  v_member_count integer := cardinality(p_member_names);
 begin
   if char_length(trim(p_name)) not between 1 and 30 then
     raise exception 'INVALID_ROOM_NAME';
   end if;
 
-  if cardinality(p_member_names) <> 3
+  if v_member_count not between 1 and 12
     or exists (
       select 1
       from unnest(p_member_names) as member_name
       where char_length(trim(member_name)) not between 1 and 12
     )
-    or (select count(distinct trim(member_name)) from unnest(p_member_names) as member_name) <> 3
+    or (select count(distinct trim(member_name)) from unnest(p_member_names) as member_name) <> v_member_count
   then
     raise exception 'INVALID_MEMBERS';
   end if;
@@ -115,7 +116,7 @@ begin
   returning id into v_room_id;
 
   insert into public.members (room_id, name, position)
-  select v_room_id, trim(member_name), ordinality - 1
+  select v_room_id, trim(member_name), (ordinality - 1)::smallint
   from unnest(p_member_names) with ordinality as input(member_name, ordinality);
 
   return public.build_room_state(v_room_id);
@@ -251,10 +252,24 @@ begin
 
   delete from public.purchases where id = v_purchase_id;
 
+  with ranked as (
+    select
+      member.id,
+      (row_number() over (
+        order by
+          coalesce(
+            array_position(v_queue_before, member.id),
+            cardinality(v_queue_before) + member.position + 1
+          ),
+          member.position
+      ) - 1)::smallint as next_position
+    from public.members as member
+    where member.room_id = v_room_id
+  )
   update public.members as member
-  set position = (restored.ordinality - 1)::smallint
-  from unnest(v_queue_before) with ordinality as restored(member_id, ordinality)
-  where member.id = restored.member_id and member.room_id = v_room_id;
+  set position = ranked.next_position
+  from ranked
+  where member.id = ranked.id;
 
   update public.rooms
   set version = version + 1, updated_at = now()
@@ -278,6 +293,7 @@ as $$
 declare
   v_room_id uuid;
   v_version integer;
+  v_member_count integer;
 begin
   select room.id, room.version into v_room_id, v_version
   from public.rooms as room
@@ -292,39 +308,48 @@ begin
     raise exception 'VERSION_CONFLICT';
   end if;
 
+  if jsonb_typeof(p_members) <> 'array' then
+    raise exception 'INVALID_MEMBERS';
+  end if;
+
+  v_member_count := jsonb_array_length(p_members);
+
   if char_length(trim(p_name)) not between 1 and 30
-    or jsonb_typeof(p_members) <> 'array'
-    or jsonb_array_length(p_members) <> 3
+    or v_member_count not between 1 and 12
     or exists (
       select 1
       from jsonb_array_elements(p_members) as entry(item)
       where char_length(trim(entry.item ->> 'name')) not between 1 and 12
+        or (entry.item ->> 'id') is null
     )
     or (
       select count(distinct trim(entry.item ->> 'name'))
       from jsonb_array_elements(p_members) as entry(item)
-    ) <> 3
+    ) <> v_member_count
     or (
       select count(distinct entry.item ->> 'id')
       from jsonb_array_elements(p_members) as entry(item)
-    ) <> 3
-    or (
-      select count(*)
+    ) <> v_member_count
+    or exists (
+      select 1
       from public.members as member
       join jsonb_array_elements(p_members) as entry(item)
         on member.id::text = entry.item ->> 'id'
-      where member.room_id = v_room_id
-    ) <> 3
+      where member.room_id <> v_room_id
+    )
   then
     raise exception 'INVALID_MEMBERS';
   end if;
 
-  update public.members as member
-  set
-    name = trim(entry.item ->> 'name'),
-    position = (entry.ordinality - 1)::smallint
-  from jsonb_array_elements(p_members) with ordinality as entry(item, ordinality)
-  where member.room_id = v_room_id and member.id::text = entry.item ->> 'id';
+  delete from public.members where room_id = v_room_id;
+
+  insert into public.members (id, room_id, name, position)
+  select
+    (entry.item ->> 'id')::uuid,
+    v_room_id,
+    trim(entry.item ->> 'name'),
+    (entry.ordinality - 1)::smallint
+  from jsonb_array_elements(p_members) with ordinality as entry(item, ordinality);
 
   update public.rooms
   set name = trim(p_name), version = version + 1, updated_at = now()

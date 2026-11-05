@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "커피턴",
     short_name: "커피턴",
-    description: "우리 셋의 공평한 커피 순서",
+    description: "함께 쓰는 공평한 커피 순서",
     start_url: "/",
     display: "standalone",
     background_color: "#f2f5f1",

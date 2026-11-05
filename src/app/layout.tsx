@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "커피턴",
-  description: "우리 셋의 공평한 커피 순서",
+  description: "함께 쓰는 공평한 커피 순서",
   applicationName: "커피턴",
   appleWebApp: {
     capable: true,

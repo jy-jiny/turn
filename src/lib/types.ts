@@ -1,3 +1,6 @@
+export const MIN_MEMBERS = 1;
+export const MAX_MEMBERS = 12;
+
 export type Member = {
   id: string;
   name: string;

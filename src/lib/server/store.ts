@@ -143,11 +143,12 @@ const memoryStore: RoomStore = {
     }
 
     const positionById = new Map(purchase.queueBefore.map((id, position) => [id, position]));
+    const restoredMemberCount = positionById.size;
     room.members = [...room.members]
       .sort(
         (left, right) =>
-          (positionById.get(left.id) ?? left.position) -
-          (positionById.get(right.id) ?? right.position),
+          (positionById.get(left.id) ?? restoredMemberCount + left.position) -
+          (positionById.get(right.id) ?? restoredMemberCount + right.position),
       )
       .map((member, position) => ({ ...member, position }));
     room.version += 1;
@@ -158,11 +159,6 @@ const memoryStore: RoomStore = {
   async updateRoom(slug, update) {
     const room = getMemoryRoom(slug);
     assertVersion(room, update.expectedVersion);
-    const currentIds = new Set(room.members.map(({ id }) => id));
-
-    if (update.members.some(({ id }) => !currentIds.has(id))) {
-      throw new StoreError("멤버 정보가 올바르지 않습니다.", 400, "INVALID_MEMBERS");
-    }
 
     room.name = update.name;
     room.members = update.members.map((member, position) => ({ ...member, position }));

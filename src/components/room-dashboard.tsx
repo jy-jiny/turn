@@ -10,9 +10,11 @@ import {
   Clipboard,
   Coffee,
   LoaderCircle,
+  Plus,
   RotateCcw,
   Settings,
   Share2,
+  Trash2,
   Users,
   X,
 } from "lucide-react";
@@ -21,7 +23,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 import { Brand } from "@/components/brand";
 import { requestRoom, RoomApiError } from "@/lib/client-api";
-import type { Member, RoomState } from "@/lib/types";
+import { MAX_MEMBERS, MIN_MEMBERS, type Member, type RoomState } from "@/lib/types";
 
 type RoomDashboardProps = {
   slug: string;
@@ -147,6 +149,31 @@ function SettingsDialog({
     });
   }
 
+  function addMember() {
+    setMembers((current) =>
+      current.length < MAX_MEMBERS
+        ? [
+            ...current,
+            {
+              id: crypto.randomUUID(),
+              name: "",
+              position: current.length,
+            },
+          ]
+        : current,
+    );
+  }
+
+  function removeMember(id: string) {
+    setMembers((current) =>
+      current.length > MIN_MEMBERS
+        ? current
+            .filter((member) => member.id !== id)
+            .map((member, position) => ({ ...member, position }))
+        : current,
+    );
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onSave(name, members);
@@ -182,7 +209,10 @@ function SettingsDialog({
           </label>
 
           <fieldset>
-            <legend className="mb-3 text-sm font-black text-[#34443c]">현재 순서</legend>
+            <legend className="mb-3 flex w-full items-center justify-between text-sm font-black text-[#34443c]">
+              <span>현재 순서</span>
+              <span className="text-xs text-[#718078]">{members.length}명</span>
+            </legend>
             <div className="grid gap-3">
               {members.map((member, index) => (
                 <div key={member.id} className="flex items-center gap-2">
@@ -216,9 +246,28 @@ function SettingsDialog({
                       <ArrowDown className="size-4" aria-hidden="true" />
                     </button>
                   </div>
+                  <button
+                    type="button"
+                    disabled={members.length <= MIN_MEMBERS}
+                    onClick={() => removeMember(member.id)}
+                    className="grid size-10 shrink-0 place-items-center rounded-[7px] text-[#8a9890] hover:bg-[#fbe9e4] hover:text-[#d64b38] disabled:cursor-not-allowed disabled:opacity-25"
+                    aria-label={`${member.name || `${index + 1}번째 사람`} 삭제`}
+                    title="사람 삭제"
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                  </button>
                 </div>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={addMember}
+              disabled={members.length >= MAX_MEMBERS}
+              className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-dashed border-[#a9c7ba] bg-[#f7faf8] text-sm font-black text-[#176047] hover:bg-[#e5f2eb] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              사람 추가
+            </button>
           </fieldset>
         </div>
 
@@ -636,7 +685,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
             </span>
             <h2 className="mt-5 text-lg font-black">같이 쓰는 방</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#796943]">
-              이 링크를 세 사람에게 보내면 같은 순서를 볼 수 있어요.
+              이 링크를 함께 마시는 사람들에게 보내면 같은 순서를 볼 수 있어요.
             </p>
             <div className="mt-5 grid gap-2">
               <button
