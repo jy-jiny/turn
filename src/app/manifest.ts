@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "함께 쓰는 공평한 순서",
     start_url: "/",
     display: "standalone",
-    background_color: "#f2f5f1",
-    theme_color: "#176047",
+    background_color: "#FFF8EF",
+    theme_color: "#E8643D",
     lang: "ko",
     categories: ["lifestyle", "productivity"],
     icons: [

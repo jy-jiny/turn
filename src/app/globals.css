@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #f2f5f1;
+  --canvas: #FFF8EF;
   --surface: #ffffff;
-  --ink: #14231c;
-  --muted: #66736c;
-  --line: #dbe3dd;
-  --brand: #176047;
-  --brand-strong: #0e4936;
-  --accent: #ff6b4a;
+  --ink: #3B2417;
+  --muted: #8C6E5D;
+  --line: #F1E2D3;
+  --brand: #E8643D;
+  --brand-strong: #D4532E;
+  --accent: #E8643D;
   --sun: #f3c84b;
 }
 
@@ -25,9 +25,9 @@ body {
   min-height: 100vh;
   background: var(--canvas);
   background-image:
-    linear-gradient(rgba(20, 35, 28, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 35, 28, 0.025) 1px, transparent 1px);
-  background-size: 32px 32px;
+    radial-gradient(60rem 30rem at 50% -10%, rgba(255, 196, 160, 0.35), transparent 70%),
+    radial-gradient(40rem 24rem at 100% 100%, rgba(255, 222, 196, 0.35), transparent 70%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: "Noto Sans KR Variable", sans-serif;
   letter-spacing: 0;
@@ -39,8 +39,8 @@ input {
 }
 
 ::selection {
-  background: #f3c84b;
-  color: #14231c;
+  background: #FFD3C0;
+  color: #3B2417;
 }
 
 @keyframes enter-up {
