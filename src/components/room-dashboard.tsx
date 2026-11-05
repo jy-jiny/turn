@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Settings,
   Share2,
+  TriangleAlert,
   Trash2,
   Users,
   X,
@@ -24,6 +25,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 import { Brand } from "@/components/brand";
 import { requestRoom, RoomApiError } from "@/lib/client-api";
+import { describeRecentPurchase, findRecentPurchase, type RecentPurchase } from "@/lib/recent-purchase";
 import { forgetRoom, rememberRoom } from "@/lib/recent-rooms";
 import { MAX_MEMBERS, MIN_MEMBERS, type Member, type RoomState } from "@/lib/types";
 
@@ -115,6 +117,52 @@ function BuyerDialog({
             )}
           </button>
         ))}
+      </div>
+    </Modal>
+  );
+}
+
+function RecentPurchaseDialog({
+  recent,
+  isPending,
+  onConfirm,
+  onClose,
+}: {
+  recent: RecentPurchase;
+  isPending: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <Modal label="중복 기록 확인" onClose={onClose}>
+      <div className="p-6 text-center sm:p-7">
+        <span className="mx-auto grid size-14 place-items-center rounded-full bg-[#FFEDE3] text-[#E8643D]">
+          <TriangleAlert className="size-7" aria-hidden="true" />
+        </span>
+        <h2 className="mt-4 text-xl font-black leading-snug text-[#3B2417]">{describeRecentPurchase(recent)}</h2>
+        <p className="mt-2 text-sm font-semibold leading-6 text-[#8C6E5D]">
+          또 기록하면 순서가 한 칸 더 넘어가요.
+          <br />
+          정말 기록할까요?
+        </p>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-12 rounded-full border-2 border-[#F1E2D3] bg-white font-black text-[#7A5A48] transition hover:border-[#F5BFA8] hover:bg-[#FFF6EF] focus-visible:outline-4 focus-visible:outline-[#E8643D]/30"
+          >
+            취소
+          </button>
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={onConfirm}
+            className="flex h-12 items-center justify-center gap-2 rounded-full bg-[#E8643D] font-black text-white shadow-[0_10px_24px_rgba(232,100,61,0.28)] transition hover:bg-[#D4532E] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#E8643D]/40 disabled:opacity-60"
+          >
+            {isPending && <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />}
+            또 기록하기
+          </button>
+        </div>
       </div>
     </Modal>
   );
@@ -313,6 +361,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
   const [notice, setNotice] = useState("");
   const [buyerDialogOpen, setBuyerDialogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pendingPurchase, setPendingPurchase] = useState<{ buyerId: string; recent: RecentPurchase } | null>(null);
   const [isPending, startTransition] = useTransition();
   const realtimeChannelRef = useRef<RealtimeChannel | null>(null);
 
@@ -416,6 +465,27 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
         setNotice(error instanceof Error ? error.message : "기록하지 못했습니다.");
       }
     });
+  }
+
+  // A second purchase within a few minutes is often a duplicate tap by someone else.
+  function requestPurchase(buyerId: string) {
+    if (!room) return;
+    const recent = findRecentPurchase(room.purchases, Date.now());
+
+    if (recent) {
+      setBuyerDialogOpen(false);
+      setPendingPurchase({ buyerId, recent });
+      return;
+    }
+
+    recordPurchase(buyerId);
+  }
+
+  function confirmPendingPurchase() {
+    if (!pendingPurchase) return;
+    const { buyerId } = pendingPurchase;
+    setPendingPurchase(null);
+    recordPurchase(buyerId);
   }
 
   function undoPurchase() {
@@ -575,7 +645,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
               <button
                 type="button"
                 disabled={isPending}
-                onClick={() => recordPurchase(currentBuyer.id)}
+                onClick={() => requestPurchase(currentBuyer.id)}
                 className="flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#E8643D] px-6 text-lg font-black text-white shadow-[0_12px_28px_rgba(232,100,61,0.32)] transition hover:bg-[#D4532E] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#E8643D]/40 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
               >
                 <span>{isPending ? "기록 중" : "샀어요"}</span>
@@ -726,8 +796,16 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
         <BuyerDialog
           room={room}
           isPending={isPending}
-          onChoose={recordPurchase}
+          onChoose={requestPurchase}
           onClose={() => setBuyerDialogOpen(false)}
+        />
+      )}
+      {pendingPurchase && (
+        <RecentPurchaseDialog
+          recent={pendingPurchase.recent}
+          isPending={isPending}
+          onConfirm={confirmPendingPurchase}
+          onClose={() => setPendingPurchase(null)}
         />
       )}
       {settingsOpen && (
