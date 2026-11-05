@@ -8,8 +8,8 @@ import {
   Check,
   ChevronRight,
   Clipboard,
-  Coffee,
   LoaderCircle,
+  Receipt,
   Plus,
   RotateCcw,
   Settings,
@@ -23,6 +23,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 import { Brand } from "@/components/brand";
 import { requestRoom, RoomApiError } from "@/lib/client-api";
+import { forgetRoom, rememberRoom } from "@/lib/recent-rooms";
 import { MAX_MEMBERS, MIN_MEMBERS, type Member, type RoomState } from "@/lib/types";
 
 type RoomDashboardProps = {
@@ -327,6 +328,9 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
           setLoadError("");
         }
       } catch (error) {
+        if (error instanceof RoomApiError && error.status === 404) {
+          forgetRoom(slug);
+        }
         if (active && !room) {
           setLoadError(error instanceof Error ? error.message : "방을 불러오지 못했습니다.");
         }
@@ -342,7 +346,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
           })
         : null;
     const channel = realtimeClient
-      ?.channel(`coffee-turn:${slug}`)
+      ?.channel(`turn:${slug}`)
       .on("broadcast", { event: "room-updated" }, () => void refresh())
       .subscribe();
     realtimeChannelRef.current = channel ?? null;
@@ -365,6 +369,10 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
     // The room is refreshed by slug; local room changes should not restart polling.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
+
+  useEffect(() => {
+    if (room) rememberRoom({ slug: room.slug, name: room.name });
+  }, [room?.slug, room?.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!notice) return;
@@ -464,8 +472,8 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${room.name} · 커피턴`,
-          text: "오늘 커피 살 사람을 확인해 보세요.",
+          title: `${room.name} · 턴`,
+          text: "오늘 살 사람을 확인해 보세요.",
           url: window.location.href,
         });
         return;
@@ -482,7 +490,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
       <main className="grid min-h-screen place-items-center px-5">
         <div className="flex items-center gap-3 font-black text-[#34443c]">
           <LoaderCircle className="size-6 animate-spin text-[#176047]" aria-hidden="true" />
-          커피 순서를 불러오는 중
+          순서를 불러오는 중
         </div>
       </main>
     );
@@ -493,7 +501,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
       <main className="grid min-h-screen place-items-center px-5">
         <section className="w-full max-w-md rounded-[8px] border border-[#dbe3dd] bg-white p-7 shadow-[0_24px_60px_rgba(30,55,43,0.12)]">
           <span className="mb-5 grid size-12 place-items-center rounded-full bg-[#e5f2eb] text-[#176047]">
-            <Coffee className="size-6" aria-hidden="true" />
+            <Receipt className="size-6" aria-hidden="true" />
           </span>
           <h1 className="text-2xl font-black">방을 열 수 없어요</h1>
           <p className="mt-3 text-sm font-semibold leading-6 text-[#66736c]">{loadError}</p>
@@ -514,7 +522,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
     <main className="min-h-screen pb-12">
       <header className="border-b border-[#dbe3dd] bg-white/90 px-5 py-4 backdrop-blur sm:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <Link href="/" aria-label="커피턴 새 방 만들기">
+          <Link href="/" aria-label="턴 첫 화면">
             <Brand compact />
           </Link>
           <div className="flex items-center gap-2">
@@ -557,7 +565,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
               <span className="size-2 rounded-full bg-[#f3c84b] shadow-[0_0_0_5px_rgba(243,200,75,0.12)]" />
               {room.name}
             </div>
-            <p className="mt-12 text-sm font-bold text-white/65 sm:mt-16">오늘 커피는</p>
+            <p className="mt-12 text-sm font-bold text-white/65 sm:mt-16">오늘은</p>
             <h1 className="mt-1 break-all text-5xl font-black leading-tight sm:text-7xl">{currentBuyer.name}</h1>
             <p className="mt-3 text-lg font-bold text-white/85">님이 살 차례예요.</p>
 
@@ -650,9 +658,9 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
               <div className="grid min-h-36 place-items-center p-6 text-center">
                 <div>
                   <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#f0f4f1] text-[#8a9890]">
-                    <Coffee className="size-6" aria-hidden="true" />
+                    <Receipt className="size-6" aria-hidden="true" />
                   </span>
-                  <p className="mt-3 text-sm font-bold text-[#718078]">첫 커피를 기다리고 있어요.</p>
+                  <p className="mt-3 text-sm font-bold text-[#718078]">첫 기록을 기다리고 있어요.</p>
                 </div>
               </div>
             ) : (
@@ -666,7 +674,7 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
                   >
                     <span className="flex min-w-0 items-center gap-3">
                       <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e5f2eb] text-[#176047]">
-                        <Coffee className="size-4" aria-hidden="true" />
+                        <Receipt className="size-4" aria-hidden="true" />
                       </span>
                       <span className="truncate font-black">{purchase.buyerName}</span>
                     </span>

@@ -33,12 +33,12 @@ export class StoreError extends Error {
 }
 
 const globalStore = globalThis as typeof globalThis & {
-  coffeeTurnRooms?: Map<string, StoredRoom>;
-  coffeeTurnFileStores?: Map<string, RoomStore>;
+  turnRooms?: Map<string, StoredRoom>;
+  turnFileStores?: Map<string, RoomStore>;
 };
 
-const memoryRooms = globalStore.coffeeTurnRooms ?? new Map<string, StoredRoom>();
-globalStore.coffeeTurnRooms = memoryRooms;
+const memoryRooms = globalStore.turnRooms ?? new Map<string, StoredRoom>();
+globalStore.turnRooms = memoryRooms;
 
 function makeSlug() {
   return randomBytes(18).toString("base64url");
@@ -189,8 +189,8 @@ function makeLocalStore(
 const memoryStore = makeLocalStore(memoryRooms, "development-memory", () => {});
 
 function getFileStore(filePath: string): RoomStore {
-  const fileStores = globalStore.coffeeTurnFileStores ?? new Map<string, RoomStore>();
-  globalStore.coffeeTurnFileStores = fileStores;
+  const fileStores = globalStore.turnFileStores ?? new Map<string, RoomStore>();
+  globalStore.turnFileStores = fileStores;
   const existing = fileStores.get(filePath);
 
   if (existing) {
@@ -274,7 +274,7 @@ function makeSupabaseStore(url: string, serviceRoleKey: string): RoomStore {
 export function getRoomStore(): RoomStore {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const dataFile = process.env.COFFEE_TURN_DATA_FILE;
+  const dataFile = process.env.TURN_DATA_FILE;
 
   if (url && serviceRoleKey) {
     return makeSupabaseStore(url, serviceRoleKey);

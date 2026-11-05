@@ -32,7 +32,7 @@ export function makeAppIcon(size: number) {
             width: "72%",
           },
         },
-        "C",
+        "T",
       ),
     ),
     {

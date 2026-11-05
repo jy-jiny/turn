@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "커피턴",
-    short_name: "커피턴",
-    description: "함께 쓰는 공평한 커피 순서",
+    name: "턴",
+    short_name: "턴",
+    description: "함께 쓰는 공평한 순서",
     start_url: "/",
     display: "standalone",
     background_color: "#f2f5f1",

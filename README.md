@@ -1,6 +1,6 @@
-# 커피턴
+# 턴
 
-함께 커피를 마시는 사람들이 구매 순서를 공유하는 모바일 중심 웹앱입니다. 현재 순서의 사람이 사거나 다른 사람이 대신 사면, 실제 구매자만 대기열 맨 뒤로 이동합니다.
+여럿이 돌아가며 사는 순서를 공유하는 모바일 중심 웹앱입니다. 현재 순서의 사람이 사거나 다른 사람이 대신 사면, 실제 구매자만 대기열 맨 뒤로 이동합니다.
 
 ## 기능
 
@@ -13,6 +13,7 @@
 - 5초 주기 및 화면 복귀 시 자동 동기화
 - 홈 화면에 설치 가능한 PWA
 - 동시 변경을 막는 버전 충돌 검사
+- 이 기기에서 열었던 방을 첫 화면 "내 방"에 표시(브라우저 저장소, 최대 10개)
 
 ## 로컬 실행
 
@@ -42,7 +43,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 Supabase 대신 서버 컴퓨터의 JSON 파일 하나에 방을 저장할 수 있습니다. 라즈베리파이처럼 한 대의 서버에서 직접 운영할 때 사용합니다.
 
 ```bash
-COFFEE_TURN_DATA_FILE=/home/pi/coffee-turn-data/rooms.json npm run start
+TURN_DATA_FILE=/home/pi/turn-data/rooms.json npm run start
 ```
 
 - Supabase 환경변수가 있으면 Supabase가 우선합니다.

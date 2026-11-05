@@ -56,14 +56,14 @@ export function CreateRoomForm() {
             onChange={(event) => setRoomName(event.target.value)}
             maxLength={30}
             autoComplete="off"
-            placeholder="예: 3층 커피 원정대"
+            placeholder="예: 3층 점심 원정대"
             className="h-14 w-full rounded-[7px] border border-[#d5ded8] bg-[#f8faf8] px-4 text-base font-semibold text-[#14231c] outline-none transition focus:border-[#176047] focus:bg-white focus:ring-4 focus:ring-[#176047]/10 placeholder:font-normal placeholder:text-[#9aa49e]"
           />
         </label>
 
         <fieldset className="grid gap-3">
           <legend className="mb-2 flex w-full items-center justify-between text-sm font-bold text-[#34443c]">
-            <span>마시는 사람</span>
+            <span>함께하는 사람</span>
             <span className="text-xs text-[#718078]">{members.length}명</span>
           </legend>
           <div className="grid gap-3 sm:grid-cols-2">

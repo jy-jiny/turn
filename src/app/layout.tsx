@@ -4,13 +4,13 @@ import { ServiceWorkerRegistration } from "@/components/service-worker-registrat
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "커피턴",
-  description: "함께 쓰는 공평한 커피 순서",
-  applicationName: "커피턴",
+  title: "턴",
+  description: "함께 쓰는 공평한 순서",
+  applicationName: "턴",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "커피턴",
+    title: "턴",
   },
   icons: {
     icon: "/icon-192.png",

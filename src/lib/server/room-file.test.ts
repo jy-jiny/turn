@@ -7,7 +7,7 @@ import { loadRoomsFromFile, saveRoomsToFile } from "./room-file";
 const directories: string[] = [];
 
 function makeFilePath() {
-  const directory = mkdtempSync(join(tmpdir(), "coffee-turn-"));
+  const directory = mkdtempSync(join(tmpdir(), "turn-"));
   directories.push(directory);
   return join(directory, "nested", "rooms.json");
 }
@@ -26,8 +26,8 @@ describe("room file storage", () => {
   it("keeps rooms across a save and a fresh load", () => {
     const filePath = makeFilePath();
     const rooms = new Map([
-      ["abc", { slug: "abc", name: "오후 커피", version: 3 }],
-      ["def", { slug: "def", name: "아침 커피", version: 1 }],
+      ["abc", { slug: "abc", name: "오후 모임", version: 3 }],
+      ["def", { slug: "def", name: "아침 모임", version: 1 }],
     ]);
 
     saveRoomsToFile(filePath, rooms);
