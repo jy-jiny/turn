@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f7f6f1;
+  --ink: #171714;
+  --blue: #2457e6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  background-image:
+    linear-gradient(rgba(23, 23, 20, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 20, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: "Noto Sans KR Variable", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: #ffcc3d;
+  color: #171714;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
