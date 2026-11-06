@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRecordTime } from "./format-record-time";
+import { formatDateTime, formatRecordTime } from "./format-record-time";
 
 // Dates are built from local parts so the test does not depend on the machine's time zone.
 const now = new Date(2026, 10, 6, 9, 30);
@@ -20,6 +20,10 @@ describe("formatRecordTime", () => {
 
   it("handles yesterday across a month boundary", () => {
     expect(formatRecordTime(new Date(2026, 9, 31, 18, 0), new Date(2026, 10, 1, 8, 0))).toBe("어제 오후 6:00");
+  });
+
+  it("formats an absolute date for share cards", () => {
+    expect(formatDateTime(new Date(2026, 10, 6, 14, 33))).toBe("11월 6일 오후 2:33");
   });
 
   it("adds the year for records from another year", () => {

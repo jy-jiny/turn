@@ -10,6 +10,7 @@ import {
   Clipboard,
   House,
   LoaderCircle,
+  MessageCircle,
   Receipt,
   Plus,
   RotateCcw,
@@ -25,9 +26,11 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 import { Brand } from "@/components/brand";
 import { requestRoom, RoomApiError } from "@/lib/client-api";
+import { renderShareCard } from "@/lib/draw-share-card";
 import { formatRecordTime } from "@/lib/format-record-time";
 import { describeRecentPurchase, findRecentPurchase, type RecentPurchase } from "@/lib/recent-purchase";
 import { forgetRoom, rememberRoom } from "@/lib/recent-rooms";
+import { buildShareCardContent, type ShareCardContent } from "@/lib/share-card";
 import { MAX_MEMBERS, MIN_MEMBERS, type Member, type RoomState } from "@/lib/types";
 
 type RoomDashboardProps = {
@@ -344,6 +347,10 @@ function SettingsDialog({
   );
 }
 
+function shareCardKey(content: ShareCardContent) {
+  return [content.shareText, content.timeLabel, ...content.chips.map((chip) => chip.label)].join("|");
+}
+
 function formatPurchaseDate(value: string) {
   return formatRecordTime(new Date(value), new Date());
 }
@@ -355,6 +362,8 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
   const [buyerDialogOpen, setBuyerDialogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pendingPurchase, setPendingPurchase] = useState<{ buyerId: string; recent: RecentPurchase } | null>(null);
+  const [shareHighlight, setShareHighlight] = useState(false);
+  const shareCardRef = useRef<{ key: string; file: File } | null>(null);
   const [isPending, startTransition] = useTransition();
   const realtimeChannelRef = useRef<RealtimeChannel | null>(null);
 
@@ -417,6 +426,24 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
     if (room) rememberRoom({ slug: room.slug, name: room.name });
   }, [room?.slug, room?.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Draw the KakaoTalk card ahead of time: iOS only opens the share sheet when
+  // share() runs straight from the tap, without waiting for the drawing.
+  useEffect(() => {
+    if (!room) return;
+    const content = buildShareCardContent(room, new Date(), window.location.href);
+    const key = shareCardKey(content);
+    if (shareCardRef.current?.key === key) return;
+    let cancelled = false;
+    renderShareCard(content)
+      .then((blob) => {
+        if (!cancelled) shareCardRef.current = { key, file: new File([blob], "turn.jpg", { type: "image/jpeg" }) };
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [room]);
+
   useEffect(() => {
     if (!notice) return;
     const timeout = window.setTimeout(() => setNotice(""), 2600);
@@ -452,7 +479,8 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
         setRoom(nextRoom);
         broadcastUpdate(nextRoom.version);
         setBuyerDialogOpen(false);
-        setNotice(`${buyer?.name ?? "구매"} 기록을 남겼어요.`);
+        setNotice(`${buyer?.name ?? "구매"} 기록을 남겼어요. 카톡으로 알려보세요!`);
+        setShareHighlight(true);
       } catch (error) {
         await refreshAfterConflict(error);
         setNotice(error instanceof Error ? error.message : "기록하지 못했습니다.");
@@ -519,6 +547,32 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
         setNotice(error instanceof Error ? error.message : "설정을 저장하지 못했습니다.");
       }
     });
+  }
+
+  async function notifyKakao() {
+    if (!room) return;
+    const content = buildShareCardContent(room, new Date(), window.location.href);
+    const key = shareCardKey(content);
+
+    try {
+      const ready = shareCardRef.current?.key === key ? shareCardRef.current.file : null;
+      const file =
+        ready ?? new File([await renderShareCard(content)], "turn.jpg", { type: "image/jpeg" });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text: content.shareText });
+      } else if (navigator.share) {
+        await navigator.share({ title: `${room.name} · 턴`, text: content.shareText });
+      } else {
+        await navigator.clipboard.writeText(content.shareText);
+        setNotice("이 브라우저는 공유 창이 없어요. 알림 문구를 복사했어요.");
+        return;
+      }
+      setShareHighlight(false);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setNotice("공유 창을 열지 못했어요. 크롬이나 사파리에서 다시 눌러 주세요.");
+    }
   }
 
   async function copyLink() {
@@ -655,6 +709,16 @@ export function RoomDashboard({ slug }: RoomDashboardProps) {
                 className="min-h-14 rounded-full border-2 border-[#F1E2D3] bg-white px-6 font-black text-[#5A3A28] transition hover:border-[#F5BFA8] hover:bg-[#FFF6EF] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#E8643D]/30 disabled:opacity-60"
               >
                 다른 사람이 샀어요
+              </button>
+              <button
+                type="button"
+                onClick={notifyKakao}
+                className={`flex min-h-14 items-center justify-center gap-2 rounded-full bg-[#FEE500] px-6 font-black text-[#3B2417] transition hover:bg-[#F5DC00] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#3B2417]/30 ${
+                  shareHighlight ? "ring-4 ring-[#E8643D]/45 ring-offset-2" : ""
+                }`}
+              >
+                <MessageCircle className="size-5" aria-hidden="true" />
+                카톡으로 알리기
               </button>
             </div>
           </div>

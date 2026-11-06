@@ -6,10 +6,15 @@ function sameDay(left: Date, right: Date) {
   );
 }
 
-function formatClock(date: Date) {
+export function formatClock(date: Date) {
   const hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${hours < 12 ? "오전" : "오후"} ${hours % 12 || 12}:${minutes}`;
+}
+
+/** Absolute date and time, e.g. "11월 6일 오후 2:33", for cards that are read later. */
+export function formatDateTime(date: Date) {
+  return `${date.getMonth() + 1}월 ${date.getDate()}일 ${formatClock(date)}`;
 }
 
 /**
