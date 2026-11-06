@@ -25,6 +25,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 import { Brand } from "@/components/brand";
 import { requestRoom, RoomApiError } from "@/lib/client-api";
+import { formatRecordTime } from "@/lib/format-record-time";
 import { describeRecentPurchase, findRecentPurchase, type RecentPurchase } from "@/lib/recent-purchase";
 import { forgetRoom, rememberRoom } from "@/lib/recent-rooms";
 import { MAX_MEMBERS, MIN_MEMBERS, type Member, type RoomState } from "@/lib/types";
@@ -344,15 +345,7 @@ function SettingsDialog({
 }
 
 function formatPurchaseDate(value: string) {
-  const date = new Date(value);
-  const today = new Date();
-  const isToday = date.toDateString() === today.toDateString();
-
-  return new Intl.DateTimeFormat("ko-KR", {
-    ...(isToday ? {} : { month: "short", day: "numeric" }),
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return formatRecordTime(new Date(value), new Date());
 }
 
 export function RoomDashboard({ slug }: RoomDashboardProps) {
